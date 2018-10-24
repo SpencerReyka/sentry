@@ -76,6 +76,12 @@ const organizationNavigation = [
         show: ({access}) => access.has('org:integrations'),
         description: t('Manage integrations for an organization'),
       },
+      {
+        path: `${pathPrefix}/developer-settings/`,
+        title: t('Developer Settings'),
+        show: ({access}) => access.has('org:integrations'),
+        description: t('Manage developer applications'),
+      },
     ],
   },
 ];
