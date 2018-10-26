@@ -26,6 +26,9 @@ from urllib3 import HTTPConnectionPool, HTTPSConnectionPool
 from urllib3.connection import HTTPConnection
 from urllib3.exceptions import HTTPError
 
+from sentry.net.http import UnixHTTPConnectionPool
+
+
 DEFAULT_NODES = ({'host': '127.0.0.1', 'port': 8098}, )
 
 
@@ -257,6 +260,8 @@ class ConnectionManager(object):
         addr = host.get('host', '127.0.0.1')
         port = int(host.get('port', 8098))
         secure = host.get('secure', False)
+        if host[:1] == '/':
+            connection_cls = UnixHTTPConnectionPool
         if not secure:
             connection_cls = HTTPConnectionPool
         else:
