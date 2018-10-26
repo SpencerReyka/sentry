@@ -27,9 +27,10 @@ export default class Pagination extends React.Component {
 
   render() {
     const {getPreviousPage, getNextPage, previous, next, pageLimit} = this.props;
-
+    console.log("next", next);
+    console.log("previous", previous)
     return (
-      <div>
+      <React.Fragment>
         <PaginationButtons className="btn-group">
           <Button
             className="btn"
@@ -47,7 +48,7 @@ export default class Pagination extends React.Component {
           />
         </PaginationButtons>
         {next && this.getPageNumber(pageLimit)}
-      </div>
+      </React.Fragment>
     );
   }
 }
