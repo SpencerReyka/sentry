@@ -97,7 +97,7 @@ class Param(object):
 
         if self.is_required and not self._type_match(value):
             raise TypeError(u'`{}` must be a {}, received {}'.format(
-                name, self.type, self._eval_type(value)
+                name, self.type, self._eval_type()
             ))
 
         return True

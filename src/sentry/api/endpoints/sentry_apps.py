@@ -46,6 +46,8 @@ class SentryAppsEndpoint(Endpoint):
             organization=self._get_user_org(request),
             scopes=request.json_body.get('scopes'),
             webhook_url=request.json_body.get('webhook_url'),
+            redirect_url=request.json_body.get('redirect_url'),
+            overview=request.json_body.get('overview'),
         )
 
         return Response(serialize(sentry_app), status=201)
