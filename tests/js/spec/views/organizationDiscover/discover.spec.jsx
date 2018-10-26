@@ -96,7 +96,7 @@ describe('Discover', function() {
       firstPageMock = MockApiClient.addMockResponse({
         url: '/organizations/org-slug/discover/query/?per_page=1000&cursor=0:0:1',
         method: 'POST',
-        body: {timing: {}, data: [{project_id: 'test'}], meta: []},
+        body: {timing: {}, data: [], meta: []},
         headers: {
           Link:
             '<api/0/organizations/sentry/discover/query/?per_page=2&cursor=0:0:1>; rel="previous"; results="false"; cursor="0:0:1", <api/0/organizations/sentry/discover/query/?per_page=1000&cursor=0:2:0>; rel="next"; results="true"; cursor="0:1000:0"',
@@ -186,13 +186,12 @@ describe('Discover', function() {
       expect(wrapper.find('NumberResultsShown').text()).toBe('Results 1001 - 2000');
     });
 
-    it('shows correct page number', async function() {
-      wrapper.instance().updateField('limit', 10);
+    it('shows 0 Results with no data', async function() {
       wrapper.instance().runQuery();
       await tick();
       wrapper.update();
 
-      expect(wrapper.find('Pagination').exists()).toBe(true);
+      expect(wrapper.find('PageNumber').text()).toBe('0 Results');
     });
 
     it('does not paginate on aggregate', async function() {
