@@ -99,7 +99,7 @@ describe('Discover', function() {
         body: {timing: {}, data: [], meta: []},
         headers: {
           Link:
-            '<api/0/organizations/sentry/discover/query/?per_page=2&cursor=0:0:1>; rel="previous"; results="false"; cursor="0:0:1", <api/0/organizations/sentry/discover/query/?per_page=2&cursor=0:2:0>; rel="next"; results="true"; cursor="0:1000:0"',
+            '<api/0/organizations/sentry/discover/query/?per_page=1000&cursor=0:0:1>; rel="previous"; results="false"; cursor="0:0:1", <api/0/organizations/sentry/discover/query/?per_page=1000&cursor=0:2:0>; rel="next"; results="true"; cursor="0:1000:0"',
         },
       });
 
@@ -107,6 +107,10 @@ describe('Discover', function() {
         url: '/organizations/org-slug/discover/query/?per_page=1000&cursor=0:1000:0',
         method: 'POST',
         body: {timing: {}, data: [], meta: []},
+        headers: {
+          Link:
+            '<api/0/organizations/sentry/discover/query/?per_page=1000&cursor=0:0:1>; rel="previous"; results="false"; cursor="0:0:1", <api/0/organizations/sentry/discover/query/?per_page=1000&cursor=0:2:0>; rel="next"; results="true"; cursor="0:2000:0"',
+        },
       });
 
       wrapper = mount(
@@ -152,11 +156,43 @@ describe('Discover', function() {
       expect(firstPageMock).toHaveBeenCalledTimes(1);
     });
 
+    it('shows correct number results shown on current page', async function() {
+      wrapper.instance().reset();
+      wrapper.instance().runQuery();
+      await tick();
+      wrapper.update();
+
+      expect(wrapper.find('PageNumber').exists()).toBe(true);
+
+      expect(wrapper.find('Pagination').props().pageLimit).toBe(
+        queryBuilder.getInternal().limit
+      );
+
+      expect(wrapper.find('PageNumber').text()).toBe('Results 1 - 1000');
+    });
+
+    it('shows correct number of results shown when going to next page', async function() {
+      wrapper.instance().runQuery();
+      await tick();
+      wrapper.update();
+      await tick();
+      wrapper
+        .find('PaginationButtons')
+        .find('Button')
+        .at(1)
+        .simulate('click');
+      await tick();
+
+      expect(wrapper.find('PageNumber').text()).toBe('Results 1001 - 2000');
+    });
+
     it('does not paginate on aggregate', async function() {
+      wrapper.instance().reset();
       wrapper.instance().updateField('aggregations', [['count()', null, 'count']]);
       wrapper.instance().runQuery();
       await tick();
       wrapper.update();
+
       expect(wrapper.find('Pagination').exists()).toBe(false);
     });
   });
