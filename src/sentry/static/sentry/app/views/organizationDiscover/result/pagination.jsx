@@ -14,21 +14,27 @@ export default class Pagination extends React.Component {
     pageLimit: PropTypes.number.isRequired,
   };
 
-  getPageNumber(pageLimit) {
-    const {next} = this.props;
-    const pageNumber = next.cursor.split(':')[1];
+  getPageNumber() {
+    const {next, dataLength, pageLimit} = this.props;
+    const endRange = next.cursor.split(':')[1];
 
-    return (
-      <PageNumber>
-        Results {pageNumber - pageLimit + 1} - {pageNumber}
-      </PageNumber>
-    );
+    if (dataLength) {
+      const from = endRange - pageLimit + 1;
+      const to = dataLength < endRange ? from + dataLength : endRange;
+
+      return (
+        <NumberResultsShown>
+          Results {from} - {to}
+        </NumberResultsShown>
+      );
+    } else {
+      return <NumberResultsShown>0 Results</NumberResultsShown>;
+    }
   }
 
   render() {
-    const {getPreviousPage, getNextPage, previous, next, pageLimit} = this.props;
-    console.log("next", next);
-    console.log("previous", previous)
+    const {getPreviousPage, getNextPage, previous, next} = this.props;
+
     return (
       <React.Fragment>
         <PaginationButtons className="btn-group">
@@ -47,7 +53,7 @@ export default class Pagination extends React.Component {
             onClick={getNextPage}
           />
         </PaginationButtons>
-        {next && this.getPageNumber(pageLimit)}
+        {next && this.getPageNumber()}
       </React.Fragment>
     );
   }
@@ -57,7 +63,7 @@ const PaginationButtons = styled(Flex)`
   justify-content: flex-end;
 `;
 
-export const PageNumber = styled(Flex)`
+export const NumberResultsShown = styled(Flex)`
   justify-content: flex-end;
   color: ${p => p.theme.gray6};
   font-size: ${p => p.theme.fontSizeSmall};
